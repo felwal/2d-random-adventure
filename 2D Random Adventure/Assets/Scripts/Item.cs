@@ -7,13 +7,9 @@ public class Item : MonoBehaviour {
     public int id;
     float t = 0;
 
-    //________________
-    //________________
+    //______________________________________________________
+    //______________________________________________________
 
-
-    private void Start() {
-
-    }
     void Update () {
 
 		t += Time.deltaTime;
@@ -21,7 +17,6 @@ public class Item : MonoBehaviour {
         if (t >= 200 || transform.position.y < 0) {
             Destroy(gameObject);
         } // destroy
-        
 
 	}
 
@@ -34,6 +29,5 @@ public class Item : MonoBehaviour {
         }
 
     }
-
 
 }

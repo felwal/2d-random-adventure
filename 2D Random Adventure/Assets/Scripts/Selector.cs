@@ -22,7 +22,7 @@ public class Selector : MonoBehaviour {
 
     void Start() {
 
-        blockHardness = new float[] { 0, 
+        blockHardness = new float[] { 0,
             2f,             // 1_stone
             0.5f,           // 2_grass
             0.5f,           // 3_dirt
@@ -46,12 +46,12 @@ public class Selector : MonoBehaviour {
         };
 
         transform.localPosition = new Vector3Int(0, 0, z);
-        itemParent = GameObject.Find("Items").transform;       
+        itemParent = GameObject.Find("Items").transform;
 
         lastX = x;
         lastY = y;
 
-    }	
+    }
 	void FixedUpdate() {
 
         x = (int)Mathf.Round(transform.position.x);
@@ -61,59 +61,58 @@ public class Selector : MonoBehaviour {
         xLocalInt = (int)Mathf.Round(xLocal);
         yLocalInt = (int)Mathf.Round(yLocal);
 
-        moveSelector();
-        lightBlock();
-        breakBlock();
-        placeBlock();
-        
+        MoveSelector();
+        LightBlock();
+        BreakBlock();
+        PlaceBlock();
 
     }
 
     // interactons
-    private void moveSelector() {
+    private void MoveSelector() {
 
         // move float
-        if (Input.GetKey(KeyCode.RightArrow) && xLocal < range) { 
-            transform.localPosition += new Vector3(0.2f, 0, 0); 
-            }
-        if (Input.GetKey(KeyCode.LeftArrow) && xLocal > -range) { 
-            transform.localPosition += new Vector3(-0.2f, 0, 0); 
-            }
-        if (Input.GetKey(KeyCode.UpArrow) && yLocal < range)  { 
-            transform.localPosition += new Vector3(0, 0.2f, 0); 
-            }
-        if (Input.GetKey(KeyCode.DownArrow) && yLocal > -range) { 
-            transform.localPosition += new Vector3(0, -0.2f, 0); 
-            }
+        if (Input.GetKey(KeyCode.RightArrow) && xLocal < range) {
+            transform.localPosition += new Vector3(0.2f, 0, 0);
+        }
+        if (Input.GetKey(KeyCode.LeftArrow) && xLocal > -range) {
+            transform.localPosition += new Vector3(-0.2f, 0, 0);
+        }
+        if (Input.GetKey(KeyCode.UpArrow) && yLocal < range)  {
+            transform.localPosition += new Vector3(0, 0.2f, 0);
+        }
+        if (Input.GetKey(KeyCode.DownArrow) && yLocal > -range) {
+            transform.localPosition += new Vector3(0, -0.2f, 0);
+        }
 
         // round to int
-        if (Input.GetKeyUp(KeyCode.RightArrow))  { 
-            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z); 
-            }
-        if (Input.GetKeyUp(KeyCode.LeftArrow))  { 
-            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z); 
-            }
-        if (Input.GetKeyUp(KeyCode.UpArrow))     { 
-            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z); 
-            }
-        if (Input.GetKeyUp(KeyCode.DownArrow))  { 
-            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z); 
-            }
+        if (Input.GetKeyUp(KeyCode.RightArrow)) {
+            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z);
+        }
+        if (Input.GetKeyUp(KeyCode.LeftArrow)) {
+            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z);
+        }
+        if (Input.GetKeyUp(KeyCode.UpArrow)) {
+            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z);
+        }
+        if (Input.GetKeyUp(KeyCode.DownArrow)) {
+            transform.localPosition = new Vector3Int(xLocalInt, yLocalInt, z);
+        }
 
     }
-    private void lightBlock() {
+    private void LightBlock() {
 
         // change lightning
         if (lastX != x || lastY != y) { // när flyttas till ny koordinat
 
             // highlight
-            if (blockReachable(x, y)) {
+            if (BlockReachable(x, y)) {
                 Color colorSelected = Terraform.color[Terraform.xyBlock[x][y]] + new Color(0.1f, 0.1f, 0.1f);
                 Terraform.xyObject[x][y].GetComponent<SpriteRenderer>().color = colorSelected;
-            }   
-            
+            }
+
             // downlight
-            if (blockExist(lastX, lastY)) {
+            if (BlockExist(lastX, lastY)) {
                 Terraform.xyObject[lastX][lastY].GetComponent<SpriteRenderer>().color = Terraform.color[Terraform.xyBlock[lastX][lastY]];
             }
 
@@ -123,20 +122,19 @@ public class Selector : MonoBehaviour {
         }
 
     }
-    private void breakBlock() {
+    private void BreakBlock() {
 
         // cancel breaking
-        if (Input.GetKeyUp(KeyCode.RightControl) || Input.GetKeyUp(KeyCode.LeftAlt)) { // eller om flyttar till annat block            
-            if (blockBreakable(x, y)) { 
+        if (Input.GetKeyUp(KeyCode.RightControl) || Input.GetKeyUp(KeyCode.LeftAlt)) { // eller om flyttar till annat block
+            if (BlockBreakable(x, y)) {
                 Color colorSelected = Terraform.color[Terraform.xyBlock[x][y]] + new Color(0.1f, 0.1f, 0.1f);
-                Terraform.xyObject[x][y].GetComponent<SpriteRenderer>().color = colorSelected; 
-                }
-            t = 0; 
-            //lägg till när selector flyttas
+                Terraform.xyObject[x][y].GetComponent<SpriteRenderer>().color = colorSelected;
+            }
+            t = 0;
         }
 
         // break...
-        if ((Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftAlt)) && blockBreakable(x,y)) {
+        if ((Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftAlt)) && BlockBreakable(x,y)) {
 
             t += Time.deltaTime;
 
@@ -146,7 +144,7 @@ public class Selector : MonoBehaviour {
             Terraform.xyObject[x][y].GetComponent<SpriteRenderer>().color += new Color(ΔC, ΔC, ΔC);
 
             // drop & break
-            if (t >= breakTime) { 
+            if (t >= breakTime) {
 
                 // drop
                 GameObject drop = Instantiate(
@@ -154,10 +152,10 @@ public class Selector : MonoBehaviour {
                     new Vector2(x, y),
                     Quaternion.identity,
                     itemParent);
-                
+
                 // make drop drop
                 drop.name = x + ", " + y + " [" + blockDrop[Terraform.xyInfo[x][y]] + "]";
-                drop.transform.localScale = new Vector3(0.5f, 0.5f);              
+                drop.transform.localScale = new Vector3(0.5f, 0.5f);
                 drop.GetComponent<BoxCollider2D>().enabled = true; // kanske ta bort platform effector & edge collider också?
                 drop.GetComponent<Rigidbody2D>().simulated = true;
                 drop.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
@@ -169,15 +167,15 @@ public class Selector : MonoBehaviour {
                 Terraform.xyBlock[x][y] = 0;
                 Destroy(Terraform.xyObject[x][y]);
                 t = 0;
-            }   
-            
+            }
+
         }
 
     }
-    private void placeBlock() {
+    private void PlaceBlock() {
 
         // place block
-        if (Input.GetKey(KeyCode.End) && !blockExist(x, y) && Player.collectables[C.SpotBlock[GUI.spotSelected]] > 0 && (xLocal != 0 || yLocal != 0)) {
+        if (Input.GetKey(KeyCode.End) && !BlockExist(x, y) && Player.collectables[C.SpotBlock[GUI.spotSelected]] > 0 && (xLocal != 0 || yLocal != 0)) {
 
             Terraform.xyObject[x][y] = Instantiate(
                 C.BlockPrefab[C.SpotBlock[GUI.spotSelected]],
@@ -188,13 +186,13 @@ public class Selector : MonoBehaviour {
             Terraform.xyInfo[x][y] = C.SpotBlock[GUI.spotSelected];
             Terraform.xyBlock[x][y] = C.SpotBlock[GUI.spotSelected];
             Terraform.xyObject[x][y].name = x + ", " + y + " [" + Terraform.xyInfo[x][y] + "]";
-                
+
             Player.collectables[C.SpotBlock[GUI.spotSelected]]--;
 
         }
 
         // jetpack
-        if (Input.GetKey(KeyCode.PageUp) && !blockExist(x, y) && (xLocal != 0 || yLocal != 0)) {
+        if (Input.GetKey(KeyCode.PageUp) && !BlockExist(x, y) && (xLocal != 0 || yLocal != 0)) {
 
             Terraform.xyObject[x][y] = Instantiate(
                 C.BlockPrefab[5],
@@ -210,53 +208,53 @@ public class Selector : MonoBehaviour {
     }
 
     // block status
-    public static bool blockBreakable(int x, int y) {
+    public static bool BlockBreakable(int x, int y) {
 
-        if (blockReachable(x, y) && Terraform.xyBlock[x][y] != 4) {
+        if (BlockReachable(x, y) && Terraform.xyBlock[x][y] != 4) {
             return true;
-        } else { return false; }
+        }
+        else { return false; }
 
     }
-    public static bool blockReachable(int x, int y) {
+    public static bool BlockReachable(int x, int y) {
 
-        if (blockExist(x, y) && !blockBlocked(x, y)) {
+        if (BlockExist(x, y) && !BlockBlocked(x, y)) {
             return true;
-        } else { return false; }
-
-        // inom range?
-    }
-    public static bool blockBlocked(int x, int y) {
-
-        if (infoExist(x + 1, y) && infoExist(x - 1, y) && infoExist(x, y + 1) && infoExist(x, y - 1)) {
-            return true;
-        } else { return false; }
-
-    } // lägg till bara av solid
-    public static bool blockExist(int x, int y) {
-
-        if (Terraform.xyBlock.ContainsKey(x) && Terraform.xyBlock[x].ContainsKey(y) && Terraform.xyBlock[x][y] != 0) { 
-            return true;
-        } else { return false; }
+        }
+        else { return false; }
 
     }
-    public static bool infoExist(int x, int y) {
+    public static bool BlockBlocked(int x, int y) {
 
-        if (Terraform.xyInfo.ContainsKey(x) && Terraform.xyInfo[x].ContainsKey(y) && Terraform.xyInfo[x][y] != 0) { // hmmm 
+        if (BnfoExist(x + 1, y) && BnfoExist(x - 1, y) && BnfoExist(x, y + 1) && BnfoExist(x, y - 1)) {
             return true;
-        } else { return false; }
+        }
+        else { return false; }
 
     }
-    public static bool objectExist(int x, int y) {
+    public static bool BlockExist(int x, int y) {
 
-        if (Terraform.xyObject.ContainsKey(x) && Terraform.xyObject[x].ContainsKey(y)) { 
+        if (Terraform.xyBlock.ContainsKey(x) && Terraform.xyBlock[x].ContainsKey(y) && Terraform.xyBlock[x][y] != 0) {
             return true;
-        } else { return false; }
+        }
+        else { return false; }
 
     }
+    public static bool BnfoExist(int x, int y) {
 
+        if (Terraform.xyInfo.ContainsKey(x) && Terraform.xyInfo[x].ContainsKey(y) && Terraform.xyInfo[x][y] != 0) { // hmmm
+            return true;
+        }
+        else { return false; }
+
+    }
+    public static bool ObjectExist(int x, int y) {
+
+        if (Terraform.xyObject.ContainsKey(x) && Terraform.xyObject[x].ContainsKey(y)) {
+            return true;
+        }
+        else { return false; }
+
+    }
 
 }
-
-// toolEfficiency beroende på tool och block
-// reset breaking t när flyttar selector
-// placera inte utanför världsgränser, där det inte finns info

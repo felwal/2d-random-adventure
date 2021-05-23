@@ -8,7 +8,6 @@ public class Terraform : MonoBehaviour {
     public string biome = "plains";
     float pFlat, pDouble, pTree, pHouse;
     float pUp = 0.5f;
-    //int mountainRadius = 25;
 
     static bool loadingR, loadingL;
 
@@ -30,12 +29,12 @@ public class Terraform : MonoBehaviour {
     public static Dictionary<int, Dictionary<int, int>> xyBlock = new Dictionary<int, Dictionary<int, int>>();
     public static Dictionary<int, Dictionary<int, GameObject>> xyObject = new Dictionary<int, Dictionary<int, GameObject>>();
 
-    //_______________________________________________________________________________________________________________________
-    //_______________________________________________________________________________________________________________________
+    //______________________________________________________
+    //______________________________________________________
 
     void Start() {
 
-        C.BlockPrefab = blockPrefab;      
+        C.BlockPrefab = blockPrefab;
         terrainParent = GameObject.Find("Terrain").transform;
 
         switch (biome) {
@@ -77,7 +76,7 @@ public class Terraform : MonoBehaviour {
         }
 
         yOrigin = (int)transform.position.y - 4;
-        generateTerrain(yOrigin);
+        GenerateTerrain(yOrigin);
 
     }
     private void Update() {
@@ -90,12 +89,12 @@ public class Terraform : MonoBehaviour {
         yMin = yPlayer - C.renderDistanceY - 1; if (yMin < 0) yMin = 0;
         yMax = yPlayer + C.renderDistanceY + 1;
 
-        loadTerrain();
+        LoadTerrain();
 
     }
 
     // generate
-    void generateTerrain(int yGrass) {
+    void GenerateTerrain(int yGrass) {
 
         // create direction parents
         xDirectionParent[true] =    InstantiateEmpty(terrainParent, "+");
@@ -114,64 +113,63 @@ public class Terraform : MonoBehaviour {
         // generate
         int yGrassR = yGrass;
         int yGrassL = yGrass;
-        for (int x = 0; x <= C.worldRadius; x++)   { yGrassR = generate(yGrassR, x, true); } // right
-        for (int x = -1; x >= -C.worldRadius; x--) { yGrassL = generate(yGrassL, x, false); } // left
+        for (int x = 0; x <= C.worldRadius; x++)   { yGrassR = Generate(yGrassR, x, true); } // right
+        for (int x = -1; x >= -C.worldRadius; x--) { yGrassL = Generate(yGrassL, x, false); } // left
 
     }
-    int generate(int yGrass, int x, bool right) {
+    int Generate(int yGrass, int x, bool right) {
 
         // create empty parent per 10x
         int x10 = x / 10; if (x > 0 && x % 10 != 0) { x10++; } else if (x < 0 && x % 10 != 0) { x10--; } // avrunda åt rätt håll
-        if (x > 0 && x % 10 == 1)       { 
-            x10Parent[x10] = InstantiateEmpty(xDirectionParent[right].transform, (x+"-"+(x+9))); 
-            } // +
-        else if (x < 0 && x % 10 == -1) { 
-            x10Parent[x10] = InstantiateEmpty(xDirectionParent[right].transform, (-x+"-"+-(x-9))); 
-            } // -
+        if (x > 0 && x % 10 == 1)       {
+            x10Parent[x10] = InstantiateEmpty(xDirectionParent[right].transform, (x+"-"+(x+9)));
+        } // +
+        else if (x < 0 && x % 10 == -1) {
+            x10Parent[x10] = InstantiateEmpty(xDirectionParent[right].transform, (-x+"-"+-(x-9)));
+        } // -
         // create empty parent per x
         xParent[x] = InstantiateEmpty(x10Parent[x10].transform, x.ToString());
 
         // generate info
-        yGrass = nGrass(yGrass, x);
+        yGrass = NGrass(yGrass, x);
         for (int y = 0; y <= C.worldCeiling; y++) {
 
             if (y == 0)                                     { xyInfo[x][y] = 4; } // bedrock
-            else if (y > yGrass)                            { xyInfo[x][y] = 0; } // 
+            else if (y > yGrass)                            { xyInfo[x][y] = 0; } //
             else if (y == yGrass)                           { xyInfo[x][y] = 2; } // grass
-            else if (yGrass-y > randomNorm(2, 30, 11, 4))   { xyInfo[x][y] = 1; } // stone
+            else if (yGrass-y > RandomNorm(2, 30, 11, 4))   { xyInfo[x][y] = 1; } // stone
             else                                            { xyInfo[x][y] = 3; } // dirt
 
         }
 
         // tree
         if (ΔTree >= 2) {
-            if ((Mathf.Abs(Mathf.Abs(x)-C.worldRadius) > 5) && random() < pTree) { 
-                tree(x, yGrass); 
+            if ((Mathf.Abs(Mathf.Abs(x)-C.worldRadius) > 5) && Random() < pTree) {
+                Tree(x, yGrass);
                 ΔTree = 0;
             }
         }
-        else { 
-            ΔTree++; 
+        else {
+            ΔTree++;
         }
-        
+
         return yGrass;
     }
 
     // load
-    void loadTerrain() {
+    void LoadTerrain() {
 
         // load
-        if (!loadingR) { for (int x = xPlayer; x <= xMax; x++) { load(x, true); } } // right 
-        if (!loadingL) { for (int x = xPlayer-1; x >= xMin; x--) { load(x, false); } } // left
+        if (!loadingR) { for (int x = xPlayer; x <= xMax; x++) { Load(x, true); } } // right
+        if (!loadingL) { for (int x = xPlayer-1; x >= xMin; x--) { Load(x, false); } } // left
 
         // unload (till binärt?)
-        for (int y = yMin; y <= yMax; y++) { unloadX(y); } // x
-        for (int x = xMin; x <= xMax; x++) { unloadY(x); } // y
+        for (int y = yMin; y <= yMax; y++) { UnloadX(y); } // x
+        for (int x = xMin; x <= xMax; x++) { UnloadY(x); } // y
         // remove collider & rb
 
-
-        }
-    void load(int x, bool r) {
+    }
+    void Load(int x, bool r) {
 
         if (r) { loadingR = true; }
         else { loadingL = true; }
@@ -179,7 +177,7 @@ public class Terraform : MonoBehaviour {
         // load block
         for (int y = yMin; y <= yMax; y++) {
 
-            if (xyInfo.ContainsKey(x) && xyInfo[x].ContainsKey(y) && xyInfo[x][y] != 0 && 
+            if (xyInfo.ContainsKey(x) && xyInfo[x].ContainsKey(y) && xyInfo[x][y] != 0 &&
                 (!xyBlock.ContainsKey(x) || !xyBlock[x].ContainsKey(y) || xyBlock[x][y] == 0)) {
 
                 xyObject[x][y] = Instantiate(
@@ -190,55 +188,56 @@ public class Terraform : MonoBehaviour {
 
                 xyObject[x][y].name = x + ", " + y + " [" + xyInfo[x][y] + "]";
                 xyBlock[x][y] = xyInfo[x][y];
-           
-            }            
+
+            }
         }
 
         if (r) { loadingR = false; }
         else { loadingL = false; }
-    }
-    void unloadX(int y) {
-
-        for (int x = xMax+1; Selector.objectExist(x, y); x++) { 
-            if (Selector.blockExist(x, y)) { xyBlock[x][y] = 0; }
-            Destroy(xyObject[x][y]);
-            } // right
-
-        for (int x = xMin-1; Selector.objectExist(x, y); x--) { 
-            if (Selector.blockExist(x, y)) { xyBlock[x][y] = 0; }
-            Destroy(xyObject[x][y]);
-            } // left
 
     }
-    void unloadY(int x) {
+    void UnloadX(int y) {
 
-        for (int y = yMax+1; Selector.objectExist(x, y); y++) { 
-            if (Selector.blockExist(x, y)) { xyBlock[x][y] = 0; }
+        for (int x = xMax+1; Selector.ObjectExist(x, y); x++) {
+            if (Selector.BlockExist(x, y)) { xyBlock[x][y] = 0; }
             Destroy(xyObject[x][y]);
-            } // upper
+        } // right
 
-        for (int y = yMin-1; Selector.objectExist(x, y); y--) { 
-            if (Selector.blockExist(x, y)) { xyBlock[x][y] = 0; }
+        for (int x = xMin-1; Selector.ObjectExist(x, y); x--) {
+            if (Selector.BlockExist(x, y)) { xyBlock[x][y] = 0; }
             Destroy(xyObject[x][y]);
-            } // lower
+        } // left
+
+    }
+    void UnloadY(int x) {
+
+        for (int y = yMax+1; Selector.ObjectExist(x, y); y++) {
+            if (Selector.BlockExist(x, y)) { xyBlock[x][y] = 0; }
+            Destroy(xyObject[x][y]);
+        } // upper
+
+        for (int y = yMin-1; Selector.ObjectExist(x, y); y--) {
+            if (Selector.BlockExist(x, y)) { xyBlock[x][y] = 0; }
+            Destroy(xyObject[x][y]);
+        } // lower
 
     }
 
-    // verktyg
-    float random() {
+    // tools
+    float Random() {
 
         return UnityEngine.Random.Range(0f, 1f);
 
     }
-    int randomInt(int min, int max) {
+    int RandomInt(int min, int max) {
 
         return UnityEngine.Random.Range(min, max + 1);
 
     }
-    int randomNorm(int a, int b, int μ, float σ)  {
+    int RandomNorm(int a, int b, int μ, float σ)  {
 
         float min = 0;
-        float rand = random();
+        float rand = Random();
         float[] p = new float[b - a + 1]; // probability
         int result = μ;
 
@@ -254,22 +253,23 @@ public class Terraform : MonoBehaviour {
         }
 
         return result;
-    }
-    int nGrass(int yGrass, int x) {
 
-        float rFlat = random();
-        float rUp = random();
-        float rDouble = random();
+    }
+    int NGrass(int yGrass, int x) {
+
+        float rFlat = Random();
+        float rUp = Random();
+        float rDouble = Random();
 
         if (rFlat > pFlat && (x > 1 || x < -1)) { // om inte platt
 
-            // om up 
-            if (rUp < pUp || yGrass < 10) {              
+            // om up
+            if (rUp < pUp || yGrass < 10) {
                 if (rDouble < pDouble) { yGrass += 2; } // om dubbelt
                 else { yGrass++; }
             }
             // om ned
-            else {               
+            else {
                 if (rDouble < pDouble) { yGrass -= 2; } // om dubbelt
                 else { yGrass--; }
             }
@@ -278,17 +278,17 @@ public class Terraform : MonoBehaviour {
         return yGrass;
 
     }
-    void tree(int x, int yGrass) {
+    void Tree(int x, int yGrass) {
 
-        int height = randomNorm(2, 10, 5, 3);
+        int height = RandomNorm(2, 10, 5, 3);
         bool crooked = false;
 
         // logs
         xyInfo[x][yGrass+1] = 7;
         for (int h = 2; h <= height; h++) {
-            
-            if (!crooked && random() < 0.2f) {
-                float p = random();
+
+            if (!crooked && Random() < 0.2f) {
+                float p = Random();
 
                 if (p < 0.25f) {
                     x++;
@@ -305,41 +305,37 @@ public class Terraform : MonoBehaviour {
 
                 crooked = true;
             } // sneväxt?
-            
+
             xyInfo[x][yGrass+h] = 7;
         }
 
         // leaves
         int xLocal = x;
         int yLocal = yGrass + height+1;
-        int maxL = randomInt(0, 7);
+        int maxL = RandomInt(0, 7);
         Dictionary<int, Dictionary<int, bool>> adjacent = blockAdjacent(xLocal, yLocal);
 
         xyInfo[xLocal][yLocal] = 8;
         for (int amount = 1; amount < maxL; amount++) {
 
             // räkna antal lediga
-            int emptyAmount = 0; 
+            int emptyAmount = 0;
             /*for (int i = 0; i < 8; i++) {
                 if (adjacent[i] == true) { emptyAmount++; }
             }*/
-            
+
             // slumpa vilken ledig
-            float p = random();
+            float p = Random();
             float pTot = 0;
             int chosenOne;
-            for (int c = 0; c < emptyAmount; c++) { 
+            for (int c = 0; c < emptyAmount; c++) {
                 pTot += 1 / emptyAmount;
-                if (p < pTot) { chosenOne = c; }        
-            } 
+                if (p < pTot) { chosenOne = c; }
+            }
 
             // placera leaves
 
-
         }
-    
-        
-
 
     }
     Dictionary<int, Dictionary<int, bool>> blockAdjacent(int xLocal, int yLocal) {
@@ -351,9 +347,9 @@ public class Terraform : MonoBehaviour {
 
             for (int y = yLocal-1; y <= yLocal+1; y++) {
 
-                if (x != xLocal && y != yLocal && Selector.blockExist(x,y)) {
+                if (x != xLocal && y != yLocal && Selector.BlockExist(x,y)) {
                     blocked[x][y] = true;
-                }     
+                }
             }
         }
 
@@ -370,12 +366,7 @@ public class Terraform : MonoBehaviour {
         obj.name = name;
 
         return obj;
+
     }
 
-
-
 }
-
-// spara block info i instanser av en klass?
-// random med standardavvikelse, medelvärde
-// biomer & mountains & valleys & caves

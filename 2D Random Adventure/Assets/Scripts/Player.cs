@@ -36,7 +36,7 @@ public class Player : MonoBehaviour {
         // set rigidbody
         rb = GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-  
+
     }
     private void FixedUpdate() {
 
@@ -45,11 +45,11 @@ public class Player : MonoBehaviour {
             //jump = true;
             rb.AddForce(new Vector2(0, 200)); // 400 keyDown
             // keep för egen fysik efter denan if
-        }       
+        }
 
         // move horizantally
-        if (Input.GetKey(KeyCode.D))   { transform.position += new Vector3(walkSpeed, 0); }   // right
-        if (Input.GetKey(KeyCode.A))   { transform.position += new Vector3(-walkSpeed, 0); }  // left
+        if (Input.GetKey(KeyCode.D)) { transform.position += new Vector3(walkSpeed, 0); }  // right
+        if (Input.GetKey(KeyCode.A)) { transform.position += new Vector3(-walkSpeed, 0); } // left
 
         // die & respawn
         if (transform.position.y < -C.renderDistanceY-3) {
@@ -57,15 +57,14 @@ public class Player : MonoBehaviour {
             transform.position = spawnPosition;
             selector.localPosition = new Vector3(0, 0, -1);
             jump = false;
-            t = 0; 
+            t = 0;
         }
         else if (transform.position.y < 0) {
             cam.backgroundColor += new Color(-0.01f, -0.01f, -0.01f);
         } // camera color
 
+    }
 
-    }  
-    
     // collisions
     private void OnCollisionStay2D(Collision2D other) {
 
@@ -90,8 +89,7 @@ public class Player : MonoBehaviour {
             grounded = false;
             t = 0;
         }
+
     }
 
 }
-
-// destroy and remove rigidbodys & colliders

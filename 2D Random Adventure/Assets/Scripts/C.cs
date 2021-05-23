@@ -18,9 +18,8 @@ public static class C {
     //______________________________________________________
     //______________________________________________________
 
-    // physics
-    public static Vector3 GravityPull(float t, float yMax)
-    {
+    public static Vector3 GravityPull(float t, float yMax) {
+
         yMax = yMax / 60;// + 0.005f; // till rätt proportioner + marginal
         float v0 = Mathf.Sqrt( (-2)*g*yMax ); // det v0 är när t är det den är när v = 0, dvs vid yMax
 
@@ -30,7 +29,4 @@ public static class C {
 
     }
 
-
 }
-
-// saveData
