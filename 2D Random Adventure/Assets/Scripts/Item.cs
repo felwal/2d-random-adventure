@@ -12,13 +12,13 @@ public class Item : MonoBehaviour {
 
     void Update () {
 
-		t += Time.deltaTime;
+        t += Time.deltaTime;
 
         if (t >= 200 || transform.position.y < 0) {
             Destroy(gameObject);
         } // destroy
 
-	}
+    }
 
     // collisions
     private void OnCollisionEnter2D(Collision2D other) {

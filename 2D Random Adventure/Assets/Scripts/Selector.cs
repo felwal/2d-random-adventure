@@ -52,7 +52,7 @@ public class Selector : MonoBehaviour {
         lastY = y;
 
     }
-	void FixedUpdate() {
+    void FixedUpdate() {
 
         x = (int)Mathf.Round(transform.position.x);
         y = (int)Mathf.Round(transform.position.y);

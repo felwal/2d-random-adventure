@@ -47,6 +47,6 @@ public class Block : MonoBehaviour {
         if (distanceX > 4 || distanceY > 4)    { cd.enabled = false; rb.simulated = false; }
         else                                   { cd.enabled = true; rb.simulated = true; }*/
 
-	}
+    }
 
 }

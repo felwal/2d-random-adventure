@@ -15,7 +15,7 @@ public class GUI : MonoBehaviour {
     //______________________________________________________
     //______________________________________________________
 
-	void Start () {
+    void Start () {
 
         C.SpotBlock = spotBlock;
         scrollSelector.localPosition = new Vector2(-122.5f, 0);
@@ -31,8 +31,8 @@ public class GUI : MonoBehaviour {
 
         }
 
-	}
-	void Update () {
+    }
+    void Update () {
 
         MoveSelected();
 
@@ -47,7 +47,7 @@ public class GUI : MonoBehaviour {
             }
         }
 
-	}
+    }
 
     // interactions
     private void MoveSelected() {
